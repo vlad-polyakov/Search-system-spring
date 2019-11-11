@@ -1,5 +1,6 @@
 package search.system.searcher.model;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Id;
@@ -14,25 +15,21 @@ import lombok.experimental.var;
 public class Documents {
 
     @Id
-    private Long id;
+    private String id;
     private String name;
-    private int population;
+    private List<String> words;
+    private String snippet;
 
     public Documents() {
     }
 
-    public Documents(String name, int population) {
 
-        this.name = name;
-        this.population = population;
-    }
-
-    public Long getId() {
+    public String getId() {
 
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
 
         this.id = id;
     }
@@ -46,59 +43,39 @@ public class Documents {
         this.name = name;
     }
 
-    public int getPopulation() {
-
-        return population;
+    public List<String> getWords() {
+        return words;
     }
 
-    public void setPopulation(int population) {
-
-        this.population = population;
+    public void setWords(List<String> words) {
+        this.words = words;
     }
 
-    @Override
-    public int hashCode() {
-
-        int hash = 7;
-        hash = 79 * hash + Objects.hashCode(this.id);
-        hash = 79 * hash + Objects.hashCode(this.name);
-        hash = 79 * hash + this.population;
-
-        return hash;
+    public String getSnippet() {
+        return snippet;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-
-        final Documents other = (Documents) obj;
-        if (this.population != other.population) {
-            return false;
-        }
-
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-
-        return Objects.equals(this.id, other.id);
+    public void setSnippet(String snippet) {
+        this.snippet = snippet;
     }
 
-    @Override
-    public String toString() {
-
-        var builder = new StringBuilder();
-        builder.append("City{id=").append(id).append(", name=")
-                .append(name).append(", population=")
-                .append(population).append("}");
-
-        return builder.toString();
+    public boolean findTermin(String termin) {
+        for(String word: this.words) {
+            if(word.equals(termin)) return true;
+        }
+        return false;
     }
+
+    public double frequencyOfTermin(String termin) {
+        double frequency = 0;
+        for(String word: this.words) {
+            if(word.equals(termin)) frequency++;
+        }
+
+        frequency /= words.size();
+        return frequency;
+    }
+
+
+
 }
