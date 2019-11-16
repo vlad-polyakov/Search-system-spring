@@ -1,9 +1,12 @@
 package search.system.searcher.model;
 
 import lombok.Data;
+
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -12,7 +15,7 @@ import java.util.Map;
         @Id
         private String id;
         private String termin;
-        private Map<String, Documents> weightCoeffsForDocs;
+        private String documentId;
 
     public String getId() {
         return id;
@@ -30,13 +33,13 @@ import java.util.Map;
             this.termin = termin;
         }
 
-        public Map<String, Documents> getWeightCoeffsForDocs() {
-            return weightCoeffsForDocs;
-        }
-
-        public void setWeightCoeffsForDocs(Map<String, Documents> weightCoeffsForDocs) {
-            this.weightCoeffsForDocs = weightCoeffsForDocs;
-        }
+    public String getDocumentId() {
+        return documentId;
     }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+}
 
 
