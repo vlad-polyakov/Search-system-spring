@@ -29,23 +29,17 @@ public class DocumentsService {
 
     @Autowired
     private IndexController indexController;
-    public void setIndex() {
-		addDocumentsWithWords("d:\\folder");
+    public void setIndex(String path) {
+		addDocumentsWithWords(path);
 		List<Documents> documents = documentsController.get();
-		List<Index> indexes = new ArrayList<>();
         List<Index> keyTermins = filterWordsInDocumentByWeight(documents);
-		for(Documents document: documents){
-
-        }
-
-
-
 	}
 
 	public void addDocumentsWithWords(String pathName) {
         List<Documents> documents = new ArrayList<>();
-        File folder = new File(pathName);
-        File[] files = folder.listFiles();
+        System.out.println("here   " + pathName);
+        List<File> files = getFileList(pathName);
+        System.out.println("index");
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             URL resource = classLoader.getResource("stop.txt");
@@ -60,7 +54,7 @@ public class DocumentsService {
                 StringTokenizer token = new StringTokenizer(text, " \t\n\r,.");
                 while(token.hasMoreTokens()){
                     String word = token.nextToken().toLowerCase();
-                    word = word.replaceAll("[\\s\t\n\r\\[\\]«».\\d?—!:;*#<>]", "");
+                   word = word.replaceAll("[\\s\t\n\r\\[\\]«».?—!:;*#<>…]", "");
                     if(word.length()>1) {
                         words.add(word);
                     }
@@ -119,22 +113,22 @@ public class DocumentsService {
     }
 
     public Map<String,Double> getTerminsWithWeights(Documents document, List<Documents> documentsList) {
+        Map<String,Double> normalWeight = new HashMap<>();
         Map<String,Double> termsWeight = new HashMap<>();
         for(String word: document.getWords()) {
-            double invertedFrequencyOfTermin = Math.log10((double)documentsList.size()/getCountOfFilesWithWord(word, documentsList));
+            double invertedFrequencyOfTermin = Math.log((double)documentsList.size()/getCountOfFilesWithWord(word, documentsList));
             double terminsWeightIndDocument = invertedFrequencyOfTermin * getTerminsFrequency(document.getWords(), word);
             System.out.println(word + " " + terminsWeightIndDocument);
             termsWeight.put(word, terminsWeightIndDocument);
         }
         double sum = 0;
-       /* for(Map.Entry<String, Double> entry : termsWeight.entrySet()) {
-            sum += (entry.getValue()* entry.getValue());
+        for(Map.Entry<String, Double> entry : termsWeight.entrySet()) {
+            sum += Math.pow(entry.getValue(), 2);
             }
         for(Map.Entry<String, Double> entry : termsWeight.entrySet()) {
             double normalWeightOfWord = entry.getValue()/ Math.sqrt(sum);
             normalWeight.put(entry.getKey(), normalWeightOfWord);
-            System.out.println(entry.getKey()+ " " +normalWeightOfWord);
-        }*/
+        }
         return termsWeight;
     }
 
@@ -143,10 +137,29 @@ public class DocumentsService {
         for(String word: words) {
             if(word.equals(termin)) count++;
         }
-        return count;
+        return count/words.size();
     }
 
+    public static List<File> getFileList(String directoryName) {
+        File directory = new File(directoryName);
 
+        List<File> resultList = new ArrayList<File>();
 
-
+        // get all the files from a directory
+        File[] fList = directory.listFiles();
+        resultList.addAll(Arrays.asList(fList));
+        for (File file : fList) {
+            if (file.isFile()) {
+                System.out.println(file.getAbsolutePath());
+            } else if (file.isDirectory()) {
+                resultList.addAll(getFileList(file.getAbsolutePath()));
+            }
+        }
+        return resultList;
+    }
 }
+
+
+
+
+

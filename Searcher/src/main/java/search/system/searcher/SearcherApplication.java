@@ -49,7 +49,6 @@ public class SearcherApplication implements CommandLineRunner{
     public void run(String... args) throws Exception {
 		documentsRepository.deleteAll();
 		indexRepository.deleteAll();
-		documentsService.setIndex();
 	   // documentsRepository.deleteAll();
 	   // indexRepository.deleteAll();
 	   // setIndex();
