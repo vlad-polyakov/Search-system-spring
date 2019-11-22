@@ -37,9 +37,7 @@ public class DocumentsService {
 
 	public void addDocumentsWithWords(String pathName) {
         List<Documents> documents = new ArrayList<>();
-        System.out.println("here   " + pathName);
         List<File> files = getFileList(pathName);
-        System.out.println("index");
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             URL resource = classLoader.getResource("stop.txt");
@@ -140,12 +138,9 @@ public class DocumentsService {
         return count/words.size();
     }
 
-    public static List<File> getFileList(String directoryName) {
+    public List<File> getFileList(String directoryName) {
         File directory = new File(directoryName);
-
-        List<File> resultList = new ArrayList<File>();
-
-        // get all the files from a directory
+        List<File> resultList = new ArrayList<>();
         File[] fList = directory.listFiles();
         resultList.addAll(Arrays.asList(fList));
         for (File file : fList) {

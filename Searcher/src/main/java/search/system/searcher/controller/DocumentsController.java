@@ -27,12 +27,6 @@ public class DocumentsController {
     @Autowired
     private DocumentsRepository documentsRepository;
 
-    @Autowired
-    private FileService fileService;
-
-    @Autowired
-    private DocumentsService documentsService;
-
     @PostMapping("documents")
     public ResponseEntity<Documents> post(@RequestBody Documents documents) {
         System.out.println("Yes");
