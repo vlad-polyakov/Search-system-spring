@@ -10,12 +10,17 @@ import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import search.system.searcher.controller.DocumentsController;
+import search.system.searcher.controller.IndexController;
 import search.system.searcher.model.Documents;
 import search.system.searcher.model.Index;
 import search.system.searcher.repositiry.DocumentsRepository;
 import search.system.searcher.repositiry.IndexRepository;
 import search.system.searcher.service.DocumentsService;
+import search.system.searcher.service.SearchService;
 
 import javax.print.Doc;
 import java.io.BufferedReader;
@@ -37,10 +42,10 @@ public class SearcherApplication implements CommandLineRunner{
 	private IndexRepository indexRepository;
 
 	@Autowired
-	private DocumentsController documentsController;
+	private IndexController documentsController;
 
 	@Autowired
-	private DocumentsService documentsService;
+	private SearchService documentsService;
 	public static void main(String[] args) {
 		SpringApplication.run(SearcherApplication.class, args);
 	}
@@ -53,6 +58,16 @@ public class SearcherApplication implements CommandLineRunner{
 	   // indexRepository.deleteAll();
 	   // setIndex();
     }
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurerAdapter() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedOrigins("*");
+			}
+		};
+	}
 
 
 

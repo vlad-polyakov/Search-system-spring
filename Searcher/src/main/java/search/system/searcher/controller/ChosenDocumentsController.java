@@ -16,6 +16,9 @@ public class ChosenDocumentsController {
 
     @Autowired
     private DocumentsService documentsService;
+
+    @Autowired
+    private IndexController indexController;
     @Autowired
     private FileService fileService;
 
@@ -25,7 +28,6 @@ public class ChosenDocumentsController {
         String message = "";
         try {
             String filePath = fileService.store(file);
-            System.out.println(filePath);
             documentsService.setIndex(filePath);
             return ResponseEntity.status(HttpStatus.OK).body(message);
         } catch (Exception e) {

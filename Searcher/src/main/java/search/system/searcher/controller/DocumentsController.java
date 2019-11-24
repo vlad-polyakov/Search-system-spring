@@ -29,7 +29,6 @@ public class DocumentsController {
 
     @PostMapping("documents")
     public ResponseEntity<Documents> post(@RequestBody Documents documents) {
-        System.out.println("Yes");
         if (documents == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -43,6 +42,10 @@ public class DocumentsController {
             return documentsRepository.findAll();
     }
 
+    @GetMapping("id/documents")
+    public Optional<Documents> getById(String id) {
+        return documentsRepository.findById(id);
+    }
 
     @PutMapping("documents")
     public Documents put(@RequestBody Documents document) {

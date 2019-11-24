@@ -48,22 +48,15 @@ public class DocumentsService {
                 String st;
                 while ((st = br.readLine()) != null)
                     text += st;
-                List<String> words = new ArrayList<>();
-                StringTokenizer token = new StringTokenizer(text, " \t\n\r,.");
-                while(token.hasMoreTokens()){
-                    String word = token.nextToken().toLowerCase();
-                   word = word.replaceAll("[\\s\t\n\r\\[\\]«».?—!:;*#<>…]", "");
-                    if(word.length()>1) {
-                        words.add(word);
-                    }
-                }
+                List<String> words = getWordsFromString(text);
                 BasicFileAttributes fileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
                 Date creationDate =
                         new Date(fileAttributes.creationTime().to(TimeUnit.MILLISECONDS));
                 Documents document = new Documents(null, file.getName(), creationDate, words, file.getPath());
                 document.setName(file.getName());
-                document.setWords(words);
+
                 words.removeAll(stopwords);
+                document.setWords(words);
                 documents.add(document);
                 documentsController.post(document);
             }
@@ -151,6 +144,19 @@ public class DocumentsService {
             }
         }
         return resultList;
+    }
+
+    public List<String> getWordsFromString(String text) {
+        List<String> words = new ArrayList<>();
+        StringTokenizer token = new StringTokenizer(text, " \t\n\r,.");
+        while(token.hasMoreTokens()){
+            String word = token.nextToken().toLowerCase();
+            word = word.replaceAll("[\\s\t\n\r\\[\\]«».?—!:;*#<>…]", "");
+            if(word.length()>1) {
+                words.add(word);
+            }
+        }
+        return words;
     }
 }
 
