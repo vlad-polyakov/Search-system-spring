@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import search.system.searcher.repositiry.DocumentsRepository;
+import search.system.searcher.repositiry.IndexRepository;
 import search.system.searcher.service.DocumentsService;
 import search.system.searcher.service.FileService;
 
@@ -18,15 +20,21 @@ public class ChosenDocumentsController {
     private DocumentsService documentsService;
 
     @Autowired
-    private IndexController indexController;
-    @Autowired
     private FileService fileService;
+
+    @Autowired
+    private DocumentsRepository documentsRepository;
+
+    @Autowired
+    private IndexRepository indexRepository;
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("fakeDocuments")
     public ResponseEntity<String> post(@RequestParam("files") MultipartFile[] file) {
         String message = "";
         try {
+            indexRepository.deleteAll();
+            documentsRepository.deleteAll();
             String filePath = fileService.store(file);
             documentsService.setIndex(filePath);
             return ResponseEntity.status(HttpStatus.OK).body(message);

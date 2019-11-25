@@ -54,8 +54,6 @@ public class SearchService {
             }
         }
         List<SearchResult> results = makeSearchResult(result, words.size());
-        System.out.println(results.get(0).getSnippet());
-        //System.out.println(results.get(1).getSnippet());
         return results;
     }
 

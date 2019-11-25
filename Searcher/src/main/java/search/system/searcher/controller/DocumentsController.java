@@ -52,6 +52,10 @@ public class DocumentsController {
         return documentsRepository.save(document);
     }
 
+    public int getDocumentsNumber() {
+        return get().size();
+    }
+
 
 
 
