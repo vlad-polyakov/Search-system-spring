@@ -42,14 +42,14 @@ public class SearchController implements ErrorController {
     }
 
     @RequestMapping(value = "search", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<Map<List<SearchResult>, Metric>> get(@RequestParam(name = "query") String query ) {
-        Map<List<SearchResult>, Metric> result = new HashMap<>();
+    public ResponseEntity<Map<Metric, List<SearchResult>>> get(@RequestParam(name = "query") String query ) {
+        Map<Metric, List<SearchResult>> result = new HashMap<>();
         List<SearchResult> searchResults = searchService.search(query);
         int a =searchResults.size();
         int b = 0;
         int c = documentsController.getDocumentsNumber();
         int d = 0;
-        result.put(searchResults, metricService.generateMetric(a,b,c,d));
+        result.put(metricService.generateMetric(a,b,c,d), searchResults);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
