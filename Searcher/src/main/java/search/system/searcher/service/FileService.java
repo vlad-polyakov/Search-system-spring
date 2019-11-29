@@ -30,7 +30,7 @@ public class FileService {
                 Files.createDirectory(fileStorageLocation);
             }
             else {
-                FileUtils.cleanDirectory(new File(fileStorageLocation.toString()));
+               // FileUtils.cleanDirectory(new File(fileStorageLocation.toString()));
             }
             System.out.println(files.length);
             for(MultipartFile file: files) {

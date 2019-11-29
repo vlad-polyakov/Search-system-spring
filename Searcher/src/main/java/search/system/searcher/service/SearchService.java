@@ -79,9 +79,7 @@ public class SearchService {
         List<SearchResult> sortedResults = searchResults.stream()
                 .sorted(Comparator.comparing(SearchResult::getRank).reversed())
                 .collect(Collectors.toList());
-        for(SearchResult searchResult: sortedResults) {
-            searchController.post(searchResult);
-        }
+
         return sortedResults;
     }
     public String textFromFile(File file) {

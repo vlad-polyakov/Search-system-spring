@@ -41,11 +41,6 @@ public class SearcherApplication implements CommandLineRunner{
 	@Autowired
 	private IndexRepository indexRepository;
 
-	@Autowired
-	private IndexController documentsController;
-
-	@Autowired
-	private SearchService documentsService;
 	public static void main(String[] args) {
 		SpringApplication.run(SearcherApplication.class, args);
 	}
@@ -54,9 +49,6 @@ public class SearcherApplication implements CommandLineRunner{
     public void run(String... args) throws Exception {
 		documentsRepository.deleteAll();
 		indexRepository.deleteAll();
-	   // documentsRepository.deleteAll();
-	   // indexRepository.deleteAll();
-	   // setIndex();
     }
 
 	@Bean

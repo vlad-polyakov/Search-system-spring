@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import search.system.searcher.repositiry.DocumentsRepository;
 import search.system.searcher.repositiry.IndexRepository;
+import search.system.searcher.repositiry.SearchResultRepository;
 import search.system.searcher.service.DocumentsService;
 import search.system.searcher.service.FileService;
 
@@ -28,12 +29,16 @@ public class ChosenDocumentsController {
     @Autowired
     private IndexRepository indexRepository;
 
+    @Autowired
+    private SearchResultRepository searchResultRepository;
+
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("fakeDocuments")
     public ResponseEntity<String> post(@RequestParam("files") MultipartFile[] file) {
         String message = "";
         try {
             indexRepository.deleteAll();
+            searchResultRepository.deleteAll();
             documentsRepository.deleteAll();
             String filePath = fileService.store(file);
             documentsService.setIndex(filePath);

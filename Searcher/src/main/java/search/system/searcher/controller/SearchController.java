@@ -44,22 +44,29 @@ public class SearchController implements ErrorController {
     @RequestMapping(value = "search", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Map<Metric, List<SearchResult>>> get(@RequestParam(name = "query") String query ) {
         Map<Metric, List<SearchResult>> result = new HashMap<>();
+
         List<SearchResult> searchResults = searchService.search(query);
         int a =searchResults.size();
         int b = 0;
         int c = documentsController.getDocumentsNumber();
         int d = 0;
         result.put(metricService.generateMetric(a,b,c,d), searchResults);
+        post(metricService.generateMetric(a,b,c,d));
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
-    @CrossOrigin("http://localhost:8080")
-    @PostMapping("search")
-    public ResponseEntity<SearchResult> post(@RequestBody SearchResult index) {
+    @GetMapping("metric")
+    public List<Metric> get() {
+        return searchResultRepository.findAll();
+    }
+
+
+    @PostMapping("metric")
+    public ResponseEntity<Metric> post(@RequestBody Metric index) {
         if (index == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        SearchResult saved = searchResultRepository.save(index);
+        Metric saved = searchResultRepository.save(index);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 }
