@@ -46,57 +46,19 @@ public class SearchService {
             System.out.println(word);
             boolean not = false;
             boolean and = false;
-            if (word.contains("!")) {
+            if (word.contains("!") && !word.contains("and")) {
                 not = true;
                 word=word.substring(1);
             }
             List<Index> index = new ArrayList<>();
             if(word.contains("and")) {
                 and = true;
-                Map<String, List<String>> andMap = new HashMap<>();
-                word = word.replace("and", " ");
-                List<String> andWords = getPartsOfQuery(word);
-                for(String littleWord: andWords) {
-                    index.addAll(indexController.get(littleWord));
-                }
-                for(Index ind: index) {
-                    String id = ind.getDocumentId();
-                    if (andMap.get(id) == null) {
-                        List<String> newListWords = new ArrayList<>();
-                        newListWords.add(ind.getTermin());
-                        andMap.put(id, newListWords);
-                    } else {
-                        andMap.get(id).add(ind.getTermin());
-                    }
-                }
-                for(Map.Entry<String, List<String>> entry : andMap.entrySet()) {
-                    if(entry.getValue().size() != andWords.size()) andMap.remove(entry.getKey());
-                    else result.put(entry.getKey(), entry.getValue());
-                }
+                result = getResultOfAND(result,word,index);
                 addToSize++;
             }
             else index = indexController.get(word);
             if (not) {
-                if (index != null && index.size() != documentsController.getDocumentsNumber()) {
-                    List<Documents> documents = documentsController.get();
-                    List<Documents> unsuitableDocuments = new ArrayList<>();
-                    for (Documents document : documents) {
-                        for (Index oneIndex : index) {
-                            if (document.getId().equals(oneIndex.getDocumentId())) unsuitableDocuments.add(document);
-                        }
-                    }
-                    documents.removeAll(unsuitableDocuments);
-                    for (Documents document : documents) {
-                        System.out.println(document.getName());
-                        if (result.get(document.getId()) == null) {
-                            List<String> newListWords = new ArrayList<>();
-                            newListWords.add(word);
-                            result.put(document.getId(), newListWords);
-                        } else {
-                            result.get(document.getId()).add(word);
-                        }
-                    }
-                }
+                result = getResultOfNO(index, word, result);
             } else {
                 if (index != null && !and) {
                     for (Index el : index) {
@@ -155,9 +117,10 @@ public class SearchService {
     }
     public List<String> getPartsOfQuery(String text) {
         List<String> words = new ArrayList<>();
+        boolean hasAND = false;
         if(text.contains("AND")) {
             text = text.replace(" AND ", "AND");
-            System.out.println(text);
+            hasAND = true;
         }
         StringTokenizer token = new StringTokenizer(text, " \t\n\r,.");
         while(token.hasMoreTokens()){
@@ -165,13 +128,81 @@ public class SearchService {
             if(word.matches("!\\w*[А-Я]*[а-я]*")) {
                 word = "!"+word.replaceAll("[\\s\t\n\r\\[\\]«».?—!:;*#<>…]", "");
             }
-            else word = word.replaceAll("[\\s\t\n\r\\[\\]«».?—!:;*#<>…]", "");
-            if(word.equals("and")) word = word.toUpperCase();
+            else if(!hasAND) word = word.replaceAll("[\\s\t\n\r\\[\\]«».?—!:;*#<>…]", "");
             if(word.length()>1) {
                 words.add(word);
             }
         }
         return words;
+    }
+
+    public Map<String, List<String>> getResultOfNO(List<Index> index, String word, Map<String, List<String>> resultMap) {
+        if (index != null && index.size() != documentsController.getDocumentsNumber()) {
+            List<Documents> documents = documentsController.get();
+            List<Documents> unsuitableDocuments = new ArrayList<>();
+            for (Documents document : documents) {
+                for (Index oneIndex : index) {
+                    if (document.getId().equals(oneIndex.getDocumentId())) unsuitableDocuments.add(document);
+                }
+            }
+            documents.removeAll(unsuitableDocuments);
+            for (Documents document : documents) {
+                System.out.println(document.getName());
+                if (resultMap.get(document.getId()) == null) {
+                    List<String> newListWords = new ArrayList<>();
+                    newListWords.add(word);
+                    resultMap.put(document.getId(), newListWords);
+                } else {
+                    resultMap.get(document.getId()).add(word);
+                }
+            }
+        }
+        return resultMap;
+    }
+
+    public Map<String, List<String>> getResultOfAND(Map<String, List<String>> result, String word, List<Index> index) {
+        Map<String, List<String>> andMap = new HashMap<>();
+        word = word.replace("and", " ");
+        System.out.println("AND: " + word);
+        String NOword = "";
+        List<String> andWords = getPartsOfQuery(word);
+        for(String littleWord: andWords) {
+            System.out.println(littleWord);
+            if(littleWord.contains("!")) {
+                littleWord = littleWord.replace("!", "");
+                List<Index> noIndex = indexController.get(littleWord);
+                andMap = getResultOfNO(noIndex, littleWord, andMap);
+            }
+            else index.addAll(indexController.get(littleWord));
+        }
+        for(Index ind: index) {
+            String id = ind.getDocumentId();
+            if (andMap.get(id) == null) {
+                List<String> newListWords = new ArrayList<>();
+                newListWords.add(ind.getTermin());
+                andMap.put(id, newListWords);
+            } else {
+                andMap.get(id).add(ind.getTermin());
+            }
+        }
+        System.out.println(result);
+        System.out.println(andMap);
+        for(Map.Entry<String, List<String>> entry : andMap.entrySet()) {
+
+            if(entry.getValue().size() == andWords.size()) {
+                boolean here = false;
+                System.out.println(andMap);
+                String key = "";
+                for(Map.Entry<String, List<String>> newEntry : result.entrySet()) {
+                    if (entry.getKey().equals(newEntry.getKey())) {
+                        key = entry.getKey();
+                        result.get(key).addAll(entry.getValue());
+                    }
+                }
+                if(key.equals("")) result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
     }
 
 
